@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 module Lark
   module Apis
     module Interactive
       def card_update(token:, card:)
-        post 'interactive/v1/card/update', {
+        post "interactive/v1/card/update", {
           token: token,
           card: card
         }

@@ -1,14 +1,16 @@
-require 'lark/token_store/base'
+# frozen_string_literal: true
+
+require "lark/token_store/base"
 
 module Lark
   module TokenStore
     class IsvTenantToken < Base
       def token_key
-        'tenant_access_token'
+        "tenant_access_token"
       end
 
       def fetch_token
-        client.request.post 'auth/v3/tenant_access_token/', {
+        client.request.post "auth/v3/tenant_access_token/", {
           app_access_token: client.app_access_token,
           tenant_key: client.tenant_key
         }

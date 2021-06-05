@@ -1,4 +1,6 @@
-require 'lark/request'
+# frozen_string_literal: true
+
+require "lark/request"
 
 module Lark
   class Api
@@ -77,41 +79,40 @@ module Lark
     end
 
     private
+      def app_token_store
+        return @app_token_store if defined?(@app_token_store)
 
-    def app_token_store
-      return @app_token_store if defined?(@app_token_store)
-
-      klass = isv ? TokenStore::IsvAppToken : TokenStore::AppToken
-      @app_token_store = klass.new(self)
-    end
-
-    def tenant_token_store
-      return @tenant_token_store if defined?(@tenant_token_store)
-
-      klass = isv ? TokenStore::IsvTenantToken : TokenStore::TenantToken
-      @tenant_token_store = klass.new(self)
-    end
-
-    def with_token(headers, tries = 2)
-      token = headers[:access_token]
-      if token.nil?
-        via = headers[:via] || 'tenant'
-        token = send("#{via}_access_token")
+        klass = isv ? TokenStore::IsvAppToken : TokenStore::AppToken
+        @app_token_store = klass.new(self)
       end
-      yield headers.merge(authorization: "Bearer #{token}")
-    rescue AccessTokenExpiredError
-      send("#{via}_token_store").fetch_token
-      retry unless (tries -= 1).zero?
-    end
 
-    class << self
-      def default
-        @default ||= new(
-          app_id: Lark.config.default_app_id,
-          app_secret: Lark.config.default_app_secret,
-          isv: Lark.config.default_isv
-        )
+      def tenant_token_store
+        return @tenant_token_store if defined?(@tenant_token_store)
+
+        klass = isv ? TokenStore::IsvTenantToken : TokenStore::TenantToken
+        @tenant_token_store = klass.new(self)
       end
-    end
+
+      def with_token(headers, tries = 2)
+        token = headers[:access_token]
+        if token.nil?
+          via = headers[:via] || "tenant"
+          token = send("#{via}_access_token")
+        end
+        yield headers.merge(authorization: "Bearer #{token}")
+      rescue AccessTokenExpiredError
+        send("#{via}_token_store").fetch_token
+        retry unless (tries -= 1).zero?
+      end
+
+      class << self
+        def default
+          @default ||= new(
+            app_id: Lark.config.default_app_id,
+            app_secret: Lark.config.default_app_secret,
+            isv: Lark.config.default_isv
+          )
+        end
+      end
   end
 end

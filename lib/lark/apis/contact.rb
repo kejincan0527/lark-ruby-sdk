@@ -1,109 +1,62 @@
+# frozen_string_literal: true
+
 module Lark
   module Apis
     module Contact
-      def scope_get
-        get 'contact/v1/scope/get'
+      def user_create(payload = {})
+        post "contact/v3/users", payload
       end
 
-      def department_add(payload={})
-        post 'contact/v1/department/add', payload
+      def user_get(user_id, params = {})
+        get "contact/v3/users/#{user_id}", params: params
       end
 
-      def department_batch_add(payload={})
-        post 'contact/v2/department/batch_add', payload
+      def user_list(params = {})
+        get "contact/v3/users", params: params
       end
 
-      def department_delete(department_id)
-        post 'contact/v1/department/delete', {id: department_id}
+      def user_edit(user_id, payload = {})
+        patch "contact/v3/users/#{user_id}", payload
       end
 
-      def department_update(payload={})
-        post 'contact/v1/department/update', payload
+      def user_update(user_id, payload = {})
+        put "contact/v3/users/#{user_id}", payload
       end
 
-      def department_get(department_id)
-        get 'contact/v1/department/info/get', params: {department_id: department_id}
+      def user_delete(user_id, payload = {})
+        delete "contact/v3/users/#{user_id}", payload
       end
 
-      def department_children(department_id:, offset:, page_size:, fetch_child: false)
-        get 'contact/v1/department/simple/list', params: {
-          department_id: department_id,
-          offset: offset,
-          page_size: page_size,
-          fetch_child: fetch_child
-        }.compact
+      def department_create(payload = {})
+        post "contact/v3/departments", payload
       end
 
-      def department_children_ids(department_id)
-        get 'contact/v1/department/list', params: {department_id: department_id}
+      def department_get(department_id, params = {})
+        get "contact/v3/departments/#{department_id}", params: params
       end
 
-      def department_batch_get(department_ids=[])
-        get 'contact/v1/department/detail/batch_get', params: {department_ids: department_ids}
+      def department_list(params = {})
+        get "contact/v3/departments", params: params
       end
 
-      def department_user_list(department_id:, offset: nil, page_token: nil, page_size:, fetch_child: false)
-        get 'contact/v1/department/user/list', params: {
-          department_id: department_id,
-          offset: offset, # deprecation
-          page_token: page_token,
-          page_size: page_size,
-          fetch_child: fetch_child
-        }.compact
+      def department_parent(params = {})
+        get "contact/v3/departments/parent", params: params
       end
 
-      def department_user_detail_list(department_id:, offset: nil, page_token: nil, page_size:, fetch_child: false)
-        get 'contact/v1/department/user/detail/list', params: {
-          department_id: department_id,
-          offset: offset, # deprecation
-          page_token: page_token,
-          page_size: page_size,
-          fetch_child: fetch_child
-        }.compact
+      def department_search(params = {})
+        post "contact/v3/departments/search", params: params
       end
 
-      def user_add(payload={})
-        post 'contact/v1/user/add', payload
+      def department_edit(department_id, payload = {})
+        patch "contact/v3/departments/#{department_id}", payload
       end
 
-      def user_batch_add(payload={})
-        post 'contact/v2/user/batch_add', payload
+      def department_update(department_id, payload = {})
+        put "contact/v3/departments/#{department_id}", payload
       end
 
-      def user_delete(payload={})
-        post 'contact/v1/user/delete', payload
-      end
-
-      def user_update(payload={})
-        post 'contact/v1/user/update', payload
-      end
-
-      def user_batch_get(params={})
-        get 'contact/v1/user/batch_get', params: params
-      end
-
-      def tenant_custom_attr_get
-        get 'contact/v1/tenant/custom_attr/get'
-      end
-
-      def task_get(task_id)
-        get 'contact/v2/task/get', params: {task_id: task_id}
-      end
-
-      def user_admin_scope_get(params)
-        get 'contact/v1/user/admin_scope/get', params: params
-      end
-
-      def role_list
-        get 'contact/v2/role/list'
-      end
-
-      def role_members(role_id:, page_token: nil, page_size: nil)
-        get 'contact/v2/role/members', params: {
-          role_id: role_id,
-          page_token: page_token,
-          page_size: page_size
-        }.compact
+      def department_delete(department_id, payload = {})
+        delete "contact/v3/departments/#{department_id}", payload
       end
     end
   end
