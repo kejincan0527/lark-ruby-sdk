@@ -1,4 +1,6 @@
-require 'http'
+# frozen_string_literal: true
+
+require "http"
 
 module Lark
   class Request
@@ -7,7 +9,7 @@ module Lark
     def initialize(skip_verify_ssl = true)
       @http = HTTP.timeout(**Lark.http_timeout_options)
       @ssl_context = OpenSSL::SSL::SSLContext.new
-      #@ssl_context.ssl_version = :TLSv1_2
+      # @ssl_context.ssl_version = :TLSv1_2
       @ssl_context.verify_mode = OpenSSL::SSL::VERIFY_NONE if skip_verify_ssl
     end
 
@@ -35,7 +37,7 @@ module Lark
           params: params,
           form: {
             media: HTTP::FormData::File.new(file),
-            hack: 'X'
+            hack: "X"
           }, # Existing here for http-form_data 1.0.1 handle single param improperly
           ssl_context: ssl_context
         )
@@ -43,64 +45,63 @@ module Lark
     end
 
     private
-
-    def request(path, header = {}, &_block)
-      url = URI.join(Lark.api_base_url, path)
-      request_uuid = SecureRandom.uuid
-      Lark.logger.info "[#{request_uuid}] request url(#{url}) with headers: #{header}"
-      as = header.delete(:as)
-      header['Accept'] = 'application/json'
-      header['X-Request-ID'] = request_uuid
-      response = yield(url, header)
-      unless response.status.success?
-        Lark.logger.error "request #{url} happen error: #{response.body}"
-        raise ResponseError.new(response.status, response.body)
+      def request(path, header = {}, &_block)
+        url = URI.join(Lark.api_base_url, path)
+        request_uuid = SecureRandom.uuid
+        Lark.logger.info "[#{request_uuid}] request url(#{url}) with headers: #{header}"
+        as = header.delete(:as)
+        header["Accept"] = "application/json"
+        header["X-Request-ID"] = request_uuid
+        response = yield(url, header)
+        unless response.status.success?
+          Lark.logger.error "request #{url} happen error: #{response.body}"
+          raise ResponseError.new(response.status, response.body)
+        end
+        handle_response(response, as || :json)
       end
-      handle_response(response, as || :json)
-    end
 
-    def handle_response(response, as)
-      content_type = response.headers[:content_type]
-      parse_as = {
-        %r{^application\/json} => :json,
-        %r{^image\/.*} => :file
-      }.each_with_object([]) { |match, memo| memo << match[1] if content_type =~ match[0] }.first || as || :text
+      def handle_response(response, as)
+        content_type = response.headers[:content_type]
+        parse_as = {
+          %r{^application/json} => :json,
+          %r{^image/.*} => :file
+        }.each_with_object([]) { |match, memo| memo << match[1] if content_type&.match?(match[0]) }.first || as || :text
 
-      body = response.body
-      case parse_as
-      when :file
-        parse_as_file(body)
-      when :json
-        parse_as_json(body)
-      else
-        body
+        body = response.body
+        case parse_as
+        when :file
+          parse_as_file(body)
+        when :json
+          parse_as_json(body)
+        else
+          body
+        end
       end
-    end
 
-    def parse_as_json(body)
-      Lark.logger.info "response body: #{body}"
-      data = JSON.parse body.to_s
-      result = Result.new(data)
-      raise ::Lark::AccessTokenExpiredError if [99_991_663, 99_991_664].include?(result.code)
+      def parse_as_json(body)
+        Lark.logger.info "response body: #{body}"
+        data = JSON.parse body.to_s
+        result = Result.new(data)
+        raise ::Lark::AccessTokenExpiredError if [99_991_663, 99_991_664].include?(result.code)
 
-      result
-    end
+        result
+      end
 
-    def parse_as_file(body)
-      file = Tempfile.new('tmp')
-      file.binmode
-      file.write(body)
-      file.close
+      def parse_as_file(body)
+        file = Tempfile.new("tmp")
+        file.binmode
+        file.write(body)
+        file.close
 
-      file
-    end
+        file
+      end
   end
 
   class Result
     attr_reader :code, :data
 
     def initialize(data)
-      @code = data['code'].to_i
+      @code = data["code"].to_i
       @data = data
     end
 

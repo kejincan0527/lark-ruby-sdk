@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Lark
   module Apis
     module Drive
@@ -14,7 +16,7 @@ module Lark
         end
 
         def root_meta(user_access_token:)
-          get 'drive/explorer/v2/root_folder/meta',
+          get "drive/explorer/v2/root_folder/meta",
               access_token: user_access_token
         end
 

@@ -1,4 +1,6 @@
-require 'logger'
+# frozen_string_literal: true
+
+require "logger"
 
 module Lark
   class << self
@@ -16,10 +18,10 @@ module Lark
 
     def logger
       @logger ||= if config.logger.nil?
-                    defined?(Rails) && Rails.logger ? Rails.logger : Logger.new(STDOUT)
-                  else
-                    config.logger
-                  end
+        defined?(Rails) && Rails.logger ? Rails.logger : Logger.new(STDOUT)
+      else
+        config.logger
+      end
     end
 
     def http_timeout_options
@@ -29,7 +31,7 @@ module Lark
     def api_base_url
       return @api_base_url if defined?(@api_base_url)
 
-      @api_base_url = config.api_base_url || 'https://open.feishu.cn/open-apis/'.freeze
+      @api_base_url = config.api_base_url || "https://open.feishu.cn/open-apis/"
     end
   end
 

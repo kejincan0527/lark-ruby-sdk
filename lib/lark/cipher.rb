@@ -1,11 +1,13 @@
-require 'openssl/cipher'
-require 'base64'
+# frozen_string_literal: true
+
+require "openssl/cipher"
+require "base64"
 
 module Lark
   class Cipher
     attr_reader :key
 
-    CIPHER = 'AES-256-CBC'.freeze
+    CIPHER = "AES-256-CBC"
 
     def initialize(key)
       @key = Digest::SHA256.digest(key)
@@ -29,6 +31,5 @@ module Lark
       ecrypted = decode64[16..-1]
       cipher.update(ecrypted) + cipher.final
     end
-
   end
 end
