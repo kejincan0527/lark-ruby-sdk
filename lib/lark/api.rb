@@ -15,6 +15,7 @@ module Lark
     api_mount :pay
     api_mount :chat
     api_mount :bot
+    api_mount :im
     api_mount :message
     api_mount :image
     api_mount :mina
